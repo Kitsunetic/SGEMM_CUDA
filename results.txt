@@ -1,0 +1,174 @@
+Running kernel 0 on device 6.
+Max size: 4096
+dimensions(m=n=k) 128, alpha: 0.5, beta: 3
+Average elapsed time: (0.000111) s, performance: (   37.9) GFLOPS. size: (128).
+dimensions(m=n=k) 256, alpha: 0.5, beta: 3
+Average elapsed time: (0.000009) s, performance: ( 3732.1) GFLOPS. size: (256).
+dimensions(m=n=k) 512, alpha: 0.5, beta: 3
+Average elapsed time: (0.000027) s, performance: (10013.1) GFLOPS. size: (512).
+dimensions(m=n=k) 1024, alpha: 0.5, beta: 3
+Average elapsed time: (0.000118) s, performance: (18128.9) GFLOPS. size: (1024).
+dimensions(m=n=k) 2048, alpha: 0.5, beta: 3
+Average elapsed time: (0.000885) s, performance: (19420.8) GFLOPS. size: (2048).
+dimensions(m=n=k) 4096, alpha: 0.5, beta: 3
+Average elapsed time: (0.005783) s, performance: (23767.5) GFLOPS. size: (4096).
+Running kernel 1 on device 6.
+Max size: 4096
+dimensions(m=n=k) 128, alpha: 0.5, beta: 3
+Average elapsed time: (0.000084) s, performance: (   49.8) GFLOPS. size: (128).
+dimensions(m=n=k) 256, alpha: 0.5, beta: 3
+Average elapsed time: (0.000165) s, performance: (  203.4) GFLOPS. size: (256).
+dimensions(m=n=k) 512, alpha: 0.5, beta: 3
+Average elapsed time: (0.001297) s, performance: (  206.9) GFLOPS. size: (512).
+dimensions(m=n=k) 1024, alpha: 0.5, beta: 3
+Average elapsed time: (0.007298) s, performance: (  294.3) GFLOPS. size: (1024).
+dimensions(m=n=k) 2048, alpha: 0.5, beta: 3
+Average elapsed time: (0.056479) s, performance: (  304.2) GFLOPS. size: (2048).
+dimensions(m=n=k) 4096, alpha: 0.5, beta: 3
+Average elapsed time: (0.454497) s, performance: (  302.4) GFLOPS. size: (4096).
+Running kernel 2 on device 6.
+Max size: 4096
+dimensions(m=n=k) 128, alpha: 0.5, beta: 3
+Average elapsed time: (0.000012) s, performance: (  349.6) GFLOPS. size: (128).
+dimensions(m=n=k) 256, alpha: 0.5, beta: 3
+Average elapsed time: (0.000022) s, performance: ( 1536.0) GFLOPS. size: (256).
+dimensions(m=n=k) 512, alpha: 0.5, beta: 3
+Average elapsed time: (0.000160) s, performance: ( 1677.9) GFLOPS. size: (512).
+dimensions(m=n=k) 1024, alpha: 0.5, beta: 3
+Average elapsed time: (0.001052) s, performance: ( 2041.1) GFLOPS. size: (1024).
+dimensions(m=n=k) 2048, alpha: 0.5, beta: 3
+Average elapsed time: (0.007951) s, performance: ( 2160.8) GFLOPS. size: (2048).
+dimensions(m=n=k) 4096, alpha: 0.5, beta: 3
+Average elapsed time: (0.065123) s, performance: ( 2110.5) GFLOPS. size: (4096).
+Running kernel 3 on device 6.
+Max size: 4096
+dimensions(m=n=k) 128, alpha: 0.5, beta: 3
+Average elapsed time: (0.000010) s, performance: (  431.3) GFLOPS. size: (128).
+dimensions(m=n=k) 256, alpha: 0.5, beta: 3
+Average elapsed time: (0.000018) s, performance: ( 1899.5) GFLOPS. size: (256).
+dimensions(m=n=k) 512, alpha: 0.5, beta: 3
+Average elapsed time: (0.000123) s, performance: ( 2190.8) GFLOPS. size: (512).
+dimensions(m=n=k) 1024, alpha: 0.5, beta: 3
+Average elapsed time: (0.000799) s, performance: ( 2688.1) GFLOPS. size: (1024).
+dimensions(m=n=k) 2048, alpha: 0.5, beta: 3
+Average elapsed time: (0.006109) s, performance: ( 2812.4) GFLOPS. size: (2048).
+dimensions(m=n=k) 4096, alpha: 0.5, beta: 3
+Average elapsed time: (0.045574) s, performance: ( 3015.7) GFLOPS. size: (4096).
+Running kernel 4 on device 6.
+Max size: 4096
+dimensions(m=n=k) 128, alpha: 0.5, beta: 3
+Average elapsed time: (0.000015) s, performance: (  272.2) GFLOPS. size: (128).
+dimensions(m=n=k) 256, alpha: 0.5, beta: 3
+Average elapsed time: (0.000028) s, performance: ( 1210.7) GFLOPS. size: (256).
+dimensions(m=n=k) 512, alpha: 0.5, beta: 3
+Average elapsed time: (0.000052) s, performance: ( 5115.4) GFLOPS. size: (512).
+dimensions(m=n=k) 1024, alpha: 0.5, beta: 3
+Average elapsed time: (0.000329) s, performance: ( 6534.7) GFLOPS. size: (1024).
+dimensions(m=n=k) 2048, alpha: 0.5, beta: 3
+Average elapsed time: (0.002107) s, performance: ( 8153.8) GFLOPS. size: (2048).
+dimensions(m=n=k) 4096, alpha: 0.5, beta: 3
+Average elapsed time: (0.015941) s, performance: ( 8622.0) GFLOPS. size: (4096).
+Running kernel 5 on device 6.
+Max size: 4096
+dimensions(m=n=k) 128, alpha: 0.5, beta: 3
+Average elapsed time: (0.000035) s, performance: (  119.4) GFLOPS. size: (128).
+dimensions(m=n=k) 256, alpha: 0.5, beta: 3
+Average elapsed time: (0.000059) s, performance: (  570.0) GFLOPS. size: (256).
+dimensions(m=n=k) 512, alpha: 0.5, beta: 3
+Average elapsed time: (0.000106) s, performance: ( 2525.7) GFLOPS. size: (512).
+dimensions(m=n=k) 1024, alpha: 0.5, beta: 3
+Average elapsed time: (0.000228) s, performance: ( 9418.9) GFLOPS. size: (1024).
+dimensions(m=n=k) 2048, alpha: 0.5, beta: 3
+Average elapsed time: (0.001371) s, performance: (12533.7) GFLOPS. size: (2048).
+dimensions(m=n=k) 4096, alpha: 0.5, beta: 3
+Average elapsed time: (0.008498) s, performance: (16172.2) GFLOPS. size: (4096).
+Running kernel 6 on device 6.
+Max size: 4096
+dimensions(m=n=k) 128, alpha: 0.5, beta: 3
+Average elapsed time: (0.000027) s, performance: (  157.0) GFLOPS. size: (128).
+dimensions(m=n=k) 256, alpha: 0.5, beta: 3
+Average elapsed time: (0.000047) s, performance: (  709.6) GFLOPS. size: (256).
+dimensions(m=n=k) 512, alpha: 0.5, beta: 3
+Average elapsed time: (0.000091) s, performance: ( 2947.7) GFLOPS. size: (512).
+dimensions(m=n=k) 1024, alpha: 0.5, beta: 3
+Average elapsed time: (0.000199) s, performance: (10795.4) GFLOPS. size: (1024).
+dimensions(m=n=k) 2048, alpha: 0.5, beta: 3
+Average elapsed time: (0.001145) s, performance: (15001.1) GFLOPS. size: (2048).
+dimensions(m=n=k) 4096, alpha: 0.5, beta: 3
+Average elapsed time: (0.007409) s, performance: (18551.4) GFLOPS. size: (4096).
+Running kernel 7 on device 6.
+Max size: 4096
+dimensions(m=n=k) 128, alpha: 0.5, beta: 3
+Average elapsed time: (0.000030) s, performance: (  140.4) GFLOPS. size: (128).
+dimensions(m=n=k) 256, alpha: 0.5, beta: 3
+Average elapsed time: (0.000054) s, performance: (  616.0) GFLOPS. size: (256).
+dimensions(m=n=k) 512, alpha: 0.5, beta: 3
+Average elapsed time: (0.000104) s, performance: ( 2589.7) GFLOPS. size: (512).
+dimensions(m=n=k) 1024, alpha: 0.5, beta: 3
+Average elapsed time: (0.000228) s, performance: ( 9416.6) GFLOPS. size: (1024).
+dimensions(m=n=k) 2048, alpha: 0.5, beta: 3
+Average elapsed time: (0.001372) s, performance: (12517.8) GFLOPS. size: (2048).
+dimensions(m=n=k) 4096, alpha: 0.5, beta: 3
+Average elapsed time: (0.008295) s, performance: (16568.1) GFLOPS. size: (4096).
+Running kernel 8 on device 6.
+Max size: 4096
+dimensions(m=n=k) 128, alpha: 0.5, beta: 3
+Average elapsed time: (0.000029) s, performance: (  142.4) GFLOPS. size: (128).
+dimensions(m=n=k) 256, alpha: 0.5, beta: 3
+Average elapsed time: (0.000054) s, performance: (  625.7) GFLOPS. size: (256).
+dimensions(m=n=k) 512, alpha: 0.5, beta: 3
+Average elapsed time: (0.000102) s, performance: ( 2631.9) GFLOPS. size: (512).
+dimensions(m=n=k) 1024, alpha: 0.5, beta: 3
+Average elapsed time: (0.000224) s, performance: ( 9603.1) GFLOPS. size: (1024).
+dimensions(m=n=k) 2048, alpha: 0.5, beta: 3
+Average elapsed time: (0.001303) s, performance: (13188.6) GFLOPS. size: (2048).
+dimensions(m=n=k) 4096, alpha: 0.5, beta: 3
+Average elapsed time: (0.008221) s, performance: (16717.1) GFLOPS. size: (4096).
+Running kernel 9 on device 6.
+Max size: 4096
+dimensions(m=n=k) 128, alpha: 0.5, beta: 3
+Average elapsed time: (0.000023) s, performance: (  184.1) GFLOPS. size: (128).
+dimensions(m=n=k) 256, alpha: 0.5, beta: 3
+Average elapsed time: (0.000040) s, performance: (  837.0) GFLOPS. size: (256).
+dimensions(m=n=k) 512, alpha: 0.5, beta: 3
+Average elapsed time: (0.000076) s, performance: ( 3552.8) GFLOPS. size: (512).
+dimensions(m=n=k) 1024, alpha: 0.5, beta: 3
+Average elapsed time: (0.000164) s, performance: (13133.8) GFLOPS. size: (1024).
+dimensions(m=n=k) 2048, alpha: 0.5, beta: 3
+Average elapsed time: (0.001037) s, performance: (16571.5) GFLOPS. size: (2048).
+dimensions(m=n=k) 4096, alpha: 0.5, beta: 3
+Average elapsed time: (0.006883) s, performance: (19968.6) GFLOPS. size: (4096).
+Running kernel 10 on device 6.
+Max size: 4096
+dimensions(m=n=k) 128, alpha: 0.5, beta: 3
+Average elapsed time: (0.000026) s, performance: (  158.3) GFLOPS. size: (128).
+dimensions(m=n=k) 256, alpha: 0.5, beta: 3
+Average elapsed time: (0.000044) s, performance: (  758.9) GFLOPS. size: (256).
+dimensions(m=n=k) 512, alpha: 0.5, beta: 3
+Average elapsed time: (0.000081) s, performance: ( 3328.9) GFLOPS. size: (512).
+dimensions(m=n=k) 1024, alpha: 0.5, beta: 3
+Average elapsed time: (0.000185) s, performance: (11627.3) GFLOPS. size: (1024).
+dimensions(m=n=k) 2048, alpha: 0.5, beta: 3
+Average elapsed time: (0.000974) s, performance: (17640.8) GFLOPS. size: (2048).
+dimensions(m=n=k) 4096, alpha: 0.5, beta: 3
+Average elapsed time: (0.006196) s, performance: (22180.2) GFLOPS. size: (4096).
+Running kernel 11 on device 6.
+Max size: 4096
+dimensions(m=n=k) 128, alpha: 0.5, beta: 3
+Divergence! Should -34.81, Is 35.31 (Diff 70.13) at 128
+Failed to pass the correctness verification against NVIDIA cuBLAS.
+ Logging faulty output into matrixValidationFailure.txt
+Running kernel 12 on device 6.
+Max size: 4096
+dimensions(m=n=k) 128, alpha: 0.5, beta: 3
+Average elapsed time: (0.000035) s, performance: (  118.9) GFLOPS. size: (128).
+dimensions(m=n=k) 256, alpha: 0.5, beta: 3
+Average elapsed time: (0.000063) s, performance: (  534.2) GFLOPS. size: (256).
+dimensions(m=n=k) 512, alpha: 0.5, beta: 3
+Average elapsed time: (0.000118) s, performance: ( 2267.9) GFLOPS. size: (512).
+dimensions(m=n=k) 1024, alpha: 0.5, beta: 3
+Average elapsed time: (0.000240) s, performance: ( 8949.6) GFLOPS. size: (1024).
+dimensions(m=n=k) 2048, alpha: 0.5, beta: 3
+Average elapsed time: (0.001299) s, performance: (13224.6) GFLOPS. size: (2048).
+dimensions(m=n=k) 4096, alpha: 0.5, beta: 3
+Average elapsed time: (0.007511) s, performance: (18297.7) GFLOPS. size: (4096).

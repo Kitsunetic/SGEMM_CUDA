@@ -9,9 +9,9 @@
 #define CEIL_DIV(M, N) (((M) + (N)-1) / (N))
 
 template <const int BLOCKSIZE>
-__global__ void sgemm_shared_mem_block(int M, int N, int K, float alpha,
-                                       const float *A, const float *B,
-                                       float beta, float *C)
+__global__ void sgemm_shared_mem_block_original(int M, int N, int K, float alpha,
+                                                const float *A, const float *B,
+                                                float beta, float *C)
 {
   // the output block that we want to compute in this threadblock
   const uint cRow = blockIdx.x;
@@ -75,7 +75,7 @@ __global__ void sgemm_shared_mem_block(
   const uint thread_row = threadIdx.x / BLOCKSIZE;
 
   A += blockIdx.x * BLOCKSIZE * K;                          // row of A
-  B += blockIdx.x * BLOCKSIZE;                              // column of B
+  B += blockIdx.y * BLOCKSIZE;                              // column of B
   C += blockIdx.x * BLOCKSIZE * N + blockIdx.y * BLOCKSIZE; // row + column of C
 
   float tmp = 0.0;

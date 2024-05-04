@@ -11,7 +11,8 @@
 template <const int BLOCKSIZE>
 __global__ void sgemm_shared_mem_block(int M, int N, int K, float alpha,
                                        const float *A, const float *B,
-                                       float beta, float *C) {
+                                       float beta, float *C)
+{
   // the output block that we want to compute in this threadblock
   const uint cRow = blockIdx.x;
   const uint cCol = blockIdx.y;
@@ -31,7 +32,8 @@ __global__ void sgemm_shared_mem_block(int M, int N, int K, float alpha,
   C += cRow * BLOCKSIZE * N + cCol * BLOCKSIZE; // row=cRow, col=cCol
 
   float tmp = 0.0;
-  for (int bkIdx = 0; bkIdx < K; bkIdx += BLOCKSIZE) {
+  for (int bkIdx = 0; bkIdx < K; bkIdx += BLOCKSIZE)
+  {
     // Have each thread load one of the elements in A & B
     // Make the threadCol (=threadIdx.x) the consecutive index
     // to allow global memory access coalescing
@@ -44,7 +46,8 @@ __global__ void sgemm_shared_mem_block(int M, int N, int K, float alpha,
     B += BLOCKSIZE * N;
 
     // execute the dotproduct on the currently cached block
-    for (int dotIdx = 0; dotIdx < BLOCKSIZE; ++dotIdx) {
+    for (int dotIdx = 0; dotIdx < BLOCKSIZE; ++dotIdx)
+    {
       tmp += As[threadRow * BLOCKSIZE + dotIdx] *
              Bs[dotIdx * BLOCKSIZE + threadCol];
     }
@@ -54,4 +57,42 @@ __global__ void sgemm_shared_mem_block(int M, int N, int K, float alpha,
   }
   C[threadRow * N + threadCol] =
       alpha * tmp + beta * C[threadRow * N + threadCol];
+}
+
+template <const int BLOCKSIZE>
+__global__ void sgemm_shared_mem_block(
+    int M, int N, int K,
+    float alpha,
+    const float *A,
+    const float *B,
+    float beta,
+    float *__restrict__ C)
+{
+  __shared__ float As[BLOCKSIZE * BLOCKSIZE]; // static shared memory allocation
+  __shared__ float Bs[BLOCKSIZE * BLOCKSIZE];
+
+  const uint thread_col = threadIdx.x % BLOCKSIZE;
+  const uint thread_row = threadIdx.x / BLOCKSIZE;
+
+  A += blockIdx.x * BLOCKSIZE * K;                          // row of A
+  B += blockIdx.x * BLOCKSIZE;                              // column of B
+  C += blockIdx.x * BLOCKSIZE * N + blockIdx.y * BLOCKSIZE; // row + column of C
+
+  float tmp = 0.0;
+  for (uint bk_idx = 0; bk_idx < K; bk_idx += BLOCKSIZE)
+  {
+    // It can be faster than previous due to coalescing of both A and B and reusing.
+    As[thread_row * BLOCKSIZE + thread_col] = A[thread_row * K + thread_col];
+    Bs[thread_row * BLOCKSIZE + thread_col] = B[thread_row * N + thread_col];
+    __syncthreads();
+
+    for (int dot_idx = 0; dot_idx < BLOCKSIZE; dot_idx++)
+      tmp += As[thread_row * BLOCKSIZE + dot_idx] * Bs[dot_idx * BLOCKSIZE + thread_col];
+    __syncthreads();
+
+    A += BLOCKSIZE;
+    B += BLOCKSIZE * N;
+  }
+
+  C[thread_row * N + thread_col] = alpha * tmp + beta * C[thread_row * N + thread_col];
 }

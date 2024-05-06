@@ -5,7 +5,8 @@
 #include <fstream>
 #include <iomanip>
 
-float get_sec() {
+float get_sec()
+{
   struct timeval time;
   gettimeofday(&time, NULL);
   return (1e6 * time.tv_sec + time.tv_usec);
@@ -13,15 +14,18 @@ float get_sec() {
 
 float cpu_elapsed_time(float &beg, float &end) { return 1.0e-6 * (end - beg); }
 
-void cudaCheck(cudaError_t error, const char *file, int line) {
-  if (error != cudaSuccess) {
+void cudaCheck(cudaError_t error, const char *file, int line)
+{
+  if (error != cudaSuccess)
+  {
     printf("[CUDA ERROR] at file %s:%d:\n%s\n", file, line,
            cudaGetErrorString(error));
     exit(EXIT_FAILURE);
   }
 };
 
-void CudaDeviceInfo() {
+void CudaDeviceInfo()
+{
   int deviceId;
 
   cudaGetDevice(&deviceId);
@@ -51,32 +55,41 @@ void CudaDeviceInfo() {
          props.multiProcessorCount, props.warpSize);
 };
 
-void randomize_matrix(float *mat, int N) {
+void randomize_matrix(float *mat, int N)
+{
   // NOTICE: Use gettimeofday instead of srand((unsigned)time(NULL)); the time
   // precision is too low and the same random number is generated.
-  struct timeval time {};
+  struct timeval time
+  {
+  };
   gettimeofday(&time, nullptr);
   srand(time.tv_usec);
-  for (int i = 0; i < N; i++) {
+  for (int i = 0; i < N; i++)
+  {
     float tmp = (float)(rand() % 5) + 0.01 * (rand() % 5);
     tmp = (rand() % 2 == 0) ? tmp : tmp * (-1.);
     mat[i] = tmp;
   }
 }
 
-void range_init_matrix(float *mat, int N) {
-  for (int i = 0; i < N; i++) {
+void range_init_matrix(float *mat, int N)
+{
+  for (int i = 0; i < N; i++)
+  {
     mat[i] = i;
   }
 }
 
-void zero_init_matrix(float *mat, int N) {
-  for (int i = 0; i < N; i++) {
+void zero_init_matrix(float *mat, int N)
+{
+  for (int i = 0; i < N; i++)
+  {
     mat[i] = 0.0;
   }
 }
 
-void copy_matrix(const float *src, float *dest, int N) {
+void copy_matrix(const float *src, float *dest, int N)
+{
   int i;
   for (i = 0; src + i && dest + i && i < N; i++)
     *(dest + i) = *(src + i);
@@ -84,17 +97,20 @@ void copy_matrix(const float *src, float *dest, int N) {
     printf("copy failed at %d while there are %d elements in total.\n", i, N);
 }
 
-void print_matrix(const float *A, int M, int N, std::ofstream &fs) {
+void print_matrix(const float *A, int M, int N, std::ofstream &fs)
+{
   int i;
   fs << std::setprecision(2)
      << std::fixed; // Set floating-point precision and fixed notation
   fs << "[";
-  for (i = 0; i < M * N; i++) {
+  for (i = 0; i < M * N; i++)
+  {
     if ((i + 1) % N == 0)
       fs << std::setw(5) << A[i]; // Set field width and write the value
     else
       fs << std::setw(5) << A[i] << ", ";
-    if ((i + 1) % N == 0) {
+    if ((i + 1) % N == 0)
+    {
       if (i + 1 < M * N)
         fs << ";\n";
     }
@@ -102,12 +118,15 @@ void print_matrix(const float *A, int M, int N, std::ofstream &fs) {
   fs << "]\n";
 }
 
-bool verify_matrix(float *matRef, float *matOut, int N) {
+bool verify_matrix(float *matRef, float *matOut, int N)
+{
   double diff = 0.0;
   int i;
-  for (i = 0; i < N; i++) {
+  for (i = 0; i < N; i++)
+  {
     diff = std::fabs(matRef[i] - matOut[i]);
-    if (diff > 0.01) {
+    if (diff > 0.01)
+    {
       printf("Divergence! Should %5.2f, Is %5.2f (Diff %5.2f) at %d\n",
              matRef[i], matOut[i], diff, i);
       return false;
@@ -116,13 +135,15 @@ bool verify_matrix(float *matRef, float *matOut, int N) {
   return true;
 }
 
-int div_ceil(int numerator, int denominator) {
+int div_ceil(int numerator, int denominator)
+{
   std::div_t res = std::div(numerator, denominator);
   return res.rem ? (res.quot + 1) : res.quot;
 }
 
 void runCublasFP32(cublasHandle_t handle, int M, int N, int K, float alpha,
-                   float *A, float *B, float beta, float *C) {
+                   float *A, float *B, float beta, float *C)
+{
   // cuBLAS uses column-major order. So we change the order of our row-major A &
   // B, since (B^T*A^T)^T = (A*B)
   // This runs cuBLAS in full fp32 mode
@@ -132,7 +153,8 @@ void runCublasFP32(cublasHandle_t handle, int M, int N, int K, float alpha,
 }
 
 void runCublasBF16(cublasHandle_t handle, int M, int N, int K, float alpha,
-                   float *A, float *B, float beta, float *C) {
+                   float *A, float *B, float beta, float *C)
+{
   // This runs cuBLAS with mixed precision (performing the mul with operands
   // downcast to bf16), which is ~4x faster
   cublasGemmEx(handle, CUBLAS_OP_N, CUBLAS_OP_N, N, M, K, &alpha, B, CUDA_R_32F,
@@ -141,7 +163,8 @@ void runCublasBF16(cublasHandle_t handle, int M, int N, int K, float alpha,
 }
 
 void runCublasTF32(cublasHandle_t handle, int M, int N, int K, float alpha,
-                   float *A, float *B, float beta, float *C) {
+                   float *A, float *B, float beta, float *C)
+{
   // This runs cuBLAS with mixed precision (performing the mul with operands
   // downcast to bf16), which is ~4x faster
   cublasGemmEx(handle, CUBLAS_OP_N, CUBLAS_OP_N, N, M, K, &alpha, B, CUDA_R_32F,
@@ -150,14 +173,16 @@ void runCublasTF32(cublasHandle_t handle, int M, int N, int K, float alpha,
 }
 
 void run_sgemm_naive(int M, int N, int K, float alpha, float *A, float *B,
-                     float beta, float *C) {
+                     float beta, float *C)
+{
   dim3 gridDim(CEIL_DIV(M, 32), CEIL_DIV(N, 32));
   dim3 blockDim(32, 32);
   sgemm_naive<<<gridDim, blockDim>>>(M, N, K, alpha, A, B, beta, C);
 }
 
 void run_sgemm_coalesce(int M, int N, int K, float alpha, float *A, float *B,
-                        float beta, float *C) {
+                        float beta, float *C)
+{
   dim3 gridDim(CEIL_DIV(M, 32), CEIL_DIV(N, 32));
   dim3 blockDim(32 * 32);
   sgemm_global_mem_coalesce<32>
@@ -165,7 +190,8 @@ void run_sgemm_coalesce(int M, int N, int K, float alpha, float *A, float *B,
 }
 
 void run_sgemm_shared_mem_block(int M, int N, int K, float alpha, float *A,
-                                float *B, float beta, float *C) {
+                                float *B, float beta, float *C)
+{
   dim3 gridDim(CEIL_DIV(M, 32), CEIL_DIV(N, 32));
   dim3 blockDim(32 * 32);
   // L1 cache becomes useless, since we access GMEM only via SMEM, so we carve
@@ -179,7 +205,8 @@ void run_sgemm_shared_mem_block(int M, int N, int K, float alpha, float *A,
 }
 
 void runSgemm1DBlocktiling(int M, int N, int K, float alpha, float *A, float *B,
-                           float beta, float *C) {
+                           float beta, float *C)
+{
   const uint BM = 64;
   const uint BN = 64;
   const uint BK = 8;
@@ -191,18 +218,22 @@ void runSgemm1DBlocktiling(int M, int N, int K, float alpha, float *A, float *B,
 }
 
 void runSgemm2DBlocktiling(int M, int N, int K, float alpha, float *A, float *B,
-                           float beta, float *C) {
+                           float beta, float *C)
+{
   const uint BK = 8;
   const uint TM = 8;
   const uint TN = 8;
-  if (M >= 128 and N >= 128) {
+  if (M >= 128 and N >= 128)
+  {
     const uint BM = 128;
     const uint BN = 128;
     dim3 gridDim(CEIL_DIV(N, BN), CEIL_DIV(M, BM));
     dim3 blockDim((BM * BN) / (TM * TN));
     sgemm2DBlocktiling<BM, BN, BK, TM, TN>
         <<<gridDim, blockDim>>>(M, N, K, alpha, A, B, beta, C);
-  } else {
+  }
+  else
+  {
     // this is a hacky solution to the underlying problem
     // of not having proper bounds checking in the kernel
     const uint BM = 64;
@@ -215,18 +246,22 @@ void runSgemm2DBlocktiling(int M, int N, int K, float alpha, float *A, float *B,
 }
 
 void runSgemmVectorize(int M, int N, int K, float alpha, float *A, float *B,
-                       float beta, float *C) {
+                       float beta, float *C)
+{
   const uint BK = 8;
   const uint TM = 8;
   const uint TN = 8;
-  if (M >= 128 and N >= 128) {
+  if (M >= 128 and N >= 128)
+  {
     const uint BM = 128;
     const uint BN = 128;
     dim3 gridDim(CEIL_DIV(N, BN), CEIL_DIV(M, BM));
     dim3 blockDim((BM * BN) / (TM * TN));
     sgemmVectorize<BM, BN, BK, TM, TN>
         <<<gridDim, blockDim>>>(M, N, K, alpha, A, B, beta, C);
-  } else {
+  }
+  else
+  {
     // this is a hacky solution to the underlying problem
     // of not having proper bounds checking in the kernel
     const uint BM = 64;
@@ -239,18 +274,22 @@ void runSgemmVectorize(int M, int N, int K, float alpha, float *A, float *B,
 }
 
 void runSgemmResolveBankConflicts(int M, int N, int K, float alpha, float *A,
-                                  float *B, float beta, float *C) {
+                                  float *B, float beta, float *C)
+{
   const uint BK = 8;
   const uint TM = 8;
   const uint TN = 8;
-  if (M >= 128 and N >= 128) {
+  if (M >= 128 and N >= 128)
+  {
     const uint BM = 128;
     const uint BN = 128;
     dim3 gridDim(CEIL_DIV(N, BN), CEIL_DIV(M, BM));
     dim3 blockDim((BM * BN) / (TM * TN));
     sgemmResolveBankConflicts<BM, BN, BK, TM, TN>
         <<<gridDim, blockDim>>>(M, N, K, alpha, A, B, beta, C);
-  } else {
+  }
+  else
+  {
     // this is a hacky solution to the underlying problem
     // of not having proper bounds checking in the kernel
     const uint BM = 64;
@@ -263,18 +302,22 @@ void runSgemmResolveBankConflicts(int M, int N, int K, float alpha, float *A,
 }
 
 void runSgemmResolveBankExtraCol(int M, int N, int K, float alpha, float *A,
-                                 float *B, float beta, float *C) {
+                                 float *B, float beta, float *C)
+{
   const uint BK = 8;
   const uint TM = 8;
   const uint TN = 8;
-  if (M >= 128 and N >= 128) {
+  if (M >= 128 and N >= 128)
+  {
     const uint BM = 128;
     const uint BN = 128;
     dim3 gridDim(CEIL_DIV(N, BN), CEIL_DIV(M, BM));
     dim3 blockDim((BM * BN) / (TM * TN));
     sgemmResolveBankExtraCol<BM, BN, BK, TM, TN>
         <<<gridDim, blockDim>>>(M, N, K, alpha, A, B, beta, C);
-  } else {
+  }
+  else
+  {
     // this is a hacky solution to the underlying problem
     // of not having proper bounds checking in the kernel
     const uint BM = 64;
@@ -287,7 +330,8 @@ void runSgemmResolveBankExtraCol(int M, int N, int K, float alpha, float *A,
 }
 
 void runSgemmAutotuned(int M, int N, int K, float alpha, float *A, float *B,
-                       float beta, float *C) {
+                       float beta, float *C)
+{
   // A100
   // const uint K9_BK = 16;
   // const uint K9_TM = 4;
@@ -329,7 +373,8 @@ void runSgemmAutotuned(int M, int N, int K, float alpha, float *A, float *B,
 }
 
 void runSgemmWarptiling(int M, int N, int K, float alpha, float *A, float *B,
-                        float beta, float *C) {
+                        float beta, float *C)
+{
   // Settings for A100
   // const uint K10_NUM_THREADS = 128;
   // const uint K10_BN = 128;
@@ -390,7 +435,8 @@ void runSgemmWarptiling(int M, int N, int K, float alpha, float *A, float *B,
 }
 
 void runSgemmDoubleBuffering(int M, int N, int K, float alpha, float *A,
-                             float *B, float beta, float *C) {
+                             float *B, float beta, float *C)
+{
   // Settings for A100
   // const uint K11_NUM_THREADS = 256;
   // const uint K11_BN = 128;
@@ -451,7 +497,8 @@ void runSgemmDoubleBuffering(int M, int N, int K, float alpha, float *A,
 }
 
 void runSgemmDoubleBuffering2(int M, int N, int K, float alpha, float *A,
-                              float *B, float beta, float *C) {
+                              float *B, float beta, float *C)
+{
   // Settings for A6000
   const uint K12_NUM_THREADS = 128;
   const uint K12_BN = 128;
@@ -501,9 +548,92 @@ void runSgemmDoubleBuffering2(int M, int N, int K, float alpha, float *A,
       <<<gridDim, blockDim>>>(M, N, K, alpha, A, B, beta, C);
 }
 
+void runSgemmVectorize2(int M, int N, int K, float alpha, float *A, float *B, float beta, float *C)
+{
+  const uint BK = 8;
+  const uint TM = 8;
+  const uint TN = 8;
+  if (M >= 128 and N >= 128)
+  {
+    const uint BM = 128;
+    const uint BN = 128;
+    dim3 gridDim(CEIL_DIV(N, BN), CEIL_DIV(M, BM));
+    dim3 blockDim((BM * BN) / (TM * TN));
+    mine::sgemmVectorize2<BM, BN, BK, TM, TN>
+        <<<gridDim, blockDim>>>(M, N, K, alpha, A, B, beta, C);
+  }
+  else
+  {
+    // this is a hacky solution to the underlying problem
+    // of not having proper bounds checking in the kernel
+    const uint BM = 64;
+    const uint BN = 64;
+    dim3 gridDim(CEIL_DIV(N, BN), CEIL_DIV(M, BM));
+    dim3 blockDim((BM * BN) / (TM * TN));
+    mine::sgemmVectorize2<BM, BN, BK, TM, TN>
+        <<<gridDim, blockDim>>>(M, N, K, alpha, A, B, beta, C);
+  }
+}
+
+void runSgemmVectorize3(int M, int N, int K, float alpha, float *A, float *B, float beta, float *C)
+{
+  const uint BK = 16;
+  const uint TM = 8;
+  const uint TN = 8;
+  if (M >= 128 and N >= 128)
+  {
+    const uint BM = 128;
+    const uint BN = 128;
+    dim3 gridDim(CEIL_DIV(N, BN), CEIL_DIV(M, BM));
+    dim3 blockDim((BM * BN) / (TM * TN));
+    mine::sgemmVectorize3<BM, BN, BK, TM, TN>
+        <<<gridDim, blockDim>>>(M, N, K, alpha, A, B, beta, C);
+  }
+  else
+  {
+    // this is a hacky solution to the underlying problem
+    // of not having proper bounds checking in the kernel
+    const uint BM = 64;
+    const uint BN = 64;
+    dim3 gridDim(CEIL_DIV(N, BN), CEIL_DIV(M, BM));
+    dim3 blockDim((BM * BN) / (TM * TN));
+    mine::sgemmVectorize3<BM, BN, BK, TM, TN>
+        <<<gridDim, blockDim>>>(M, N, K, alpha, A, B, beta, C);
+  }
+}
+
+void runSgemmVectorize4(int M, int N, int K, float alpha, float *A, float *B, float beta, float *C)
+{
+  const uint BK = 8;
+  const uint TM = 8;
+  const uint TN = 8;
+  if (M >= 128 and N >= 128)
+  {
+    const uint BM = 128;
+    const uint BN = 128;
+    dim3 gridDim(CEIL_DIV(N, BN), CEIL_DIV(M, BM));
+    dim3 blockDim((BM * BN) / (TM * TN));
+    mine::sgemmVectorize3<BM, BN, BK, TM, TN>
+        <<<gridDim, blockDim>>>(M, N, K, alpha, A, B, beta, C);
+  }
+  else
+  {
+    // this is a hacky solution to the underlying problem
+    // of not having proper bounds checking in the kernel
+    const uint BM = 64;
+    const uint BN = 64;
+    dim3 gridDim(CEIL_DIV(N, BN), CEIL_DIV(M, BM));
+    dim3 blockDim((BM * BN) / (TM * TN));
+    mine::sgemmVectorize3<BM, BN, BK, TM, TN>
+        <<<gridDim, blockDim>>>(M, N, K, alpha, A, B, beta, C);
+  }
+}
+
 void run_kernel(int kernel_num, int M, int N, int K, float alpha, float *A,
-                float *B, float beta, float *C, cublasHandle_t handle) {
-  switch (kernel_num) {
+                float *B, float beta, float *C, cublasHandle_t handle)
+{
+  switch (kernel_num)
+  {
   case 0:
     runCublasFP32(handle, M, N, K, alpha, A, B, beta, C);
     break;
@@ -542,6 +672,14 @@ void run_kernel(int kernel_num, int M, int N, int K, float alpha, float *A,
     break;
   case 12:
     runSgemmDoubleBuffering2(M, N, K, alpha, A, B, beta, C);
+    break;
+  case 13:
+    runSgemmVectorize2(M, N, K, alpha, A, B, beta, C);
+  case 14:
+    runSgemmVectorize3(M, N, K, alpha, A, B, beta, C);
+    break;
+  case 15:
+    runSgemmVectorize4(M, N, K, alpha, A, B, beta, C);
     break;
   default:
     throw std::invalid_argument("Unknown kernel number");

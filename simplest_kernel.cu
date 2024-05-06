@@ -2,14 +2,16 @@
 #include <iostream>
 #include <vector>
 
-__global__ void kernel(uint *A, uint *B, int row) {
+__global__ void kernel(uint *A, uint *B, int row)
+{
   auto x = threadIdx.x / 4;
   auto y = threadIdx.x % 4;
   A[x * row + y] = x;
   B[x * row + y] = y;
 }
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   uint *Xs, *Ys;
   uint *Xs_d, *Ys_d;
 
@@ -31,8 +33,10 @@ int main(int argc, char **argv) {
 
   cudaDeviceSynchronize();
 
-  for (int row = 0; row < SIZE; ++row) {
-    for (int col = 0; col < SIZE; ++col) {
+  for (int row = 0; row < SIZE; ++row)
+  {
+    for (int col = 0; col < SIZE; ++col)
+    {
       std::cout << "[" << Xs[row * SIZE + col] << "|" << Ys[row * SIZE + col]
                 << "] ";
     }

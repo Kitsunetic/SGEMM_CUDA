@@ -10,8 +10,10 @@
 
 const std::string errLogFile = "matrixValidationFailure.txt";
 
-int main(int argc, char **argv) {
-  if (argc != 2) {
+int main(int argc, char **argv)
+{
+  if (argc != 2)
+  {
     std::cerr << "Please select a kernel (range 0 - 12, 0 for NVIDIA cuBLAS)"
               << std::endl;
     exit(EXIT_FAILURE);
@@ -19,14 +21,16 @@ int main(int argc, char **argv) {
 
   // get kernel number
   int kernel_num = std::stoi(argv[1]);
-  if (kernel_num < 0 || kernel_num > 12) {
-    std::cerr << "Please enter a valid kernel number (0-12)" << std::endl;
-    exit(EXIT_FAILURE);
-  }
+  // if (kernel_num < 0 || kernel_num > 12)
+  // {
+  //   std::cerr << "Please enter a valid kernel number (0-12)" << std::endl;
+  //   exit(EXIT_FAILURE);
+  // }
 
   // get environment variable for device
   int deviceIdx = 0;
-  if (getenv("DEVICE") != NULL) {
+  if (getenv("DEVICE") != NULL)
+  {
     deviceIdx = atoi(getenv("DEVICE"));
   }
   cudaCheck(cudaSetDevice(deviceIdx));
@@ -40,7 +44,8 @@ int main(int argc, char **argv) {
   // type cublasStatus_t to determine whether the handle was created
   // successfully (the value is 0)
   cublasHandle_t handle;
-  if (cublasCreate(&handle)) {
+  if (cublasCreate(&handle))
+  {
     std::cerr << "Create cublas handle error." << std::endl;
     exit(EXIT_FAILURE);
   };
@@ -90,14 +95,16 @@ int main(int argc, char **argv) {
                        cudaMemcpyHostToDevice));
 
   int repeat_times = 50;
-  for (int size : SIZE) {
+  for (int size : SIZE)
+  {
     m = n = k = size;
 
     std::cout << "dimensions(m=n=k) " << m << ", alpha: " << alpha
               << ", beta: " << beta << std::endl;
     // Verify the correctness of the calculation, and execute it once before the
     // kernel function timing to avoid cold start errors
-    if (kernel_num != 0) {
+    if (kernel_num != 0)
+    {
       run_kernel(0, m, n, k, alpha, dA, dB, beta, dC_ref,
                  handle); // cuBLAS
       run_kernel(kernel_num, m, n, k, alpha, dA, dB, beta, dC,
@@ -107,12 +114,14 @@ int main(int argc, char **argv) {
       cudaMemcpy(C, dC, sizeof(float) * m * n, cudaMemcpyDeviceToHost);
       cudaMemcpy(C_ref, dC_ref, sizeof(float) * m * n, cudaMemcpyDeviceToHost);
 
-      if (!verify_matrix(C_ref, C, m * n)) {
+      if (!verify_matrix(C_ref, C, m * n))
+      {
         std::cout
             << "Failed to pass the correctness verification against NVIDIA "
                "cuBLAS."
             << std::endl;
-        if (m <= 128) {
+        if (m <= 128)
+        {
           std::cout << " Logging faulty output into " << errLogFile << "\n";
           std::ofstream fs;
           fs.open(errLogFile);
@@ -130,7 +139,8 @@ int main(int argc, char **argv) {
     }
 
     cudaEventRecord(beg);
-    for (int j = 0; j < repeat_times; j++) {
+    for (int j = 0; j < repeat_times; j++)
+    {
       // We don't reset dC between runs to save time
       run_kernel(kernel_num, m, n, k, alpha, dA, dB, beta, dC, handle);
     }

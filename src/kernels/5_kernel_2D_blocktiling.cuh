@@ -150,7 +150,7 @@ __global__ void __launch_bounds__((BM * BN) / (TM * TN), 1)
   float regM[TM] = {0.0};
   float regN[TN] = {0.0};
 
-  for (uint bk_idx = 0; bk_idx < K; bk_idx += BK)
+  for (uint k_idx = 0; k_idx < K; k_idx += BK)
   {
     for (uint i = 0; i < BM; i += stride_A)
       As[(inner_row_A + i) * BK + inner_col_A] = A[(inner_row_A + i) * K + inner_col_A];
@@ -158,12 +158,12 @@ __global__ void __launch_bounds__((BM * BN) / (TM * TN), 1)
       Bs[(inner_row_B + i) * BN + inner_col_B] = B[(inner_row_B + i) * N + inner_col_B];
     __syncthreads();
 
-    for (uint dot_idx = 0; dot_idx < BK; dot_idx++)
+    for (uint bk_idx = 0; bk_idx < BK; bk_idx++)
     {
       for (uint i = 0; i < TM; i++)
-        regM[i] = As[(thread_row * TM + i) * BK + dot_idx];
-      for (uint i = 0; i < TM; i++)
-        regN[i] = Bs[dot_idx * BN + thread_col * TN + i];
+        regM[i] = As[(thread_row * TM + i) * BK + bk_idx];
+      for (uint i = 0; i < TN; i++)
+        regN[i] = Bs[bk_idx * BN + thread_col * TN + i];
       for (uint res_idx_m = 0; res_idx_m < TM; res_idx_m++)
         for (uint res_idx_n = 0; res_idx_n < TN; res_idx_n++)
         {

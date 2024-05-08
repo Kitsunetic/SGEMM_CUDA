@@ -580,24 +580,27 @@ void runSgemmVectorize3(int M, int N, int K, float alpha, float *A, float *B, fl
   const uint BK = 16;
   const uint TM = 8;
   const uint TN = 8;
+
   if (M >= 128 and N >= 128)
   {
     const uint BM = 128;
     const uint BN = 128;
+    constexpr uint STRIDE_A = (256 * 4) / BK;
+    constexpr uint STRIDE_B = 256 / (BN / 4);
     dim3 gridDim(CEIL_DIV(N, BN), CEIL_DIV(M, BM));
     dim3 blockDim((BM * BN) / (TM * TN));
-    mine::sgemmVectorize3<BM, BN, BK, TM, TN>
+    mine::sgemmVectorize3<BM, BN, BK, TM, TN, STRIDE_A, STRIDE_B>
         <<<gridDim, blockDim>>>(M, N, K, alpha, A, B, beta, C);
   }
   else
   {
-    // this is a hacky solution to the underlying problem
-    // of not having proper bounds checking in the kernel
     const uint BM = 64;
     const uint BN = 64;
+    constexpr uint STRIDE_A = (256 * 4) / BK;
+    constexpr uint STRIDE_B = 256 / (BN / 4);
     dim3 gridDim(CEIL_DIV(N, BN), CEIL_DIV(M, BM));
     dim3 blockDim((BM * BN) / (TM * TN));
-    mine::sgemmVectorize3<BM, BN, BK, TM, TN>
+    mine::sgemmVectorize3<BM, BN, BK, TM, TN, STRIDE_A, STRIDE_B>
         <<<gridDim, blockDim>>>(M, N, K, alpha, A, B, beta, C);
   }
 }
@@ -613,7 +616,7 @@ void runSgemmVectorize4(int M, int N, int K, float alpha, float *A, float *B, fl
     const uint BN = 128;
     dim3 gridDim(CEIL_DIV(N, BN), CEIL_DIV(M, BM));
     dim3 blockDim((BM * BN) / (TM * TN));
-    mine::sgemmVectorize3<BM, BN, BK, TM, TN>
+    mine::sgemmVectorize4<BM, BN, BK, TM, TN>
         <<<gridDim, blockDim>>>(M, N, K, alpha, A, B, beta, C);
   }
   else
@@ -624,7 +627,7 @@ void runSgemmVectorize4(int M, int N, int K, float alpha, float *A, float *B, fl
     const uint BN = 64;
     dim3 gridDim(CEIL_DIV(N, BN), CEIL_DIV(M, BM));
     dim3 blockDim((BM * BN) / (TM * TN));
-    mine::sgemmVectorize3<BM, BN, BK, TM, TN>
+    mine::sgemmVectorize4<BM, BN, BK, TM, TN>
         <<<gridDim, blockDim>>>(M, N, K, alpha, A, B, beta, C);
   }
 }
@@ -675,6 +678,7 @@ void run_kernel(int kernel_num, int M, int N, int K, float alpha, float *A,
     break;
   case 13:
     runSgemmVectorize2(M, N, K, alpha, A, B, beta, C);
+    break;
   case 14:
     runSgemmVectorize3(M, N, K, alpha, A, B, beta, C);
     break;

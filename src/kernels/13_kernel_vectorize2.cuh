@@ -89,7 +89,7 @@ namespace mine
     }
 
     // increase BK. error
-    template <const int BM, const int BN, const int BK, const int TM, const int TN>
+    template <const int BM, const int BN, const int BK, const int TM, const int TN, const int STRIDE_A, const int STRIDE_B>
     __global__ void sgemmVectorize3(
         const int M, const int N, const int K,
         const float alpha,
@@ -115,29 +115,42 @@ namespace mine
 
         // gmem IO 할 때의 row/col
         const uint inner_row_A = threadIdx.x / (BK / 4);
-        const uint inner_col_A = (threadIdx.x % (BK / 4)) * 4;
+        const uint inner_col_A = threadIdx.x % (BK / 4);
         const uint inner_row_B = threadIdx.x / (BN / 4);
-        const uint inner_col_B = (threadIdx.x % (BN / 4)) * 4;
+        const uint inner_col_B = threadIdx.x % (BN / 4);
 
         for (uint k_idx = 0; k_idx < K; k_idx += BK)
         {
-            float4 tmp = reinterpret_cast<float4 *>(&A[inner_row_A * K + inner_col_A])[0];
-            As[(inner_col_A + 0) * BM + inner_row_A] = tmp.x;
-            As[(inner_col_A + 1) * BM + inner_row_A] = tmp.y;
-            As[(inner_col_A + 2) * BM + inner_row_A] = tmp.z;
-            As[(inner_col_A + 3) * BM + inner_row_A] = tmp.w;
-
-            reinterpret_cast<float4 *>(&Bs[inner_row_B * BN + inner_col_B])[0] =
-                reinterpret_cast<float4 *>(&B[inner_row_B * N + inner_col_B])[0];
+#pragma unroll
+            for (uint i = 0; i < BM; i += STRIDE_A)
+            {
+                float4 tmp = reinterpret_cast<float4 *>(&A[(inner_row_A + i) * K + inner_col_A * 4])[0];
+                As[(inner_col_A * 4 + 0) * BM + inner_row_A + i] = tmp.x;
+                As[(inner_col_A * 4 + 1) * BM + inner_row_A + i] = tmp.y;
+                As[(inner_col_A * 4 + 2) * BM + inner_row_A + i] = tmp.z;
+                As[(inner_col_A * 4 + 3) * BM + inner_row_A + i] = tmp.w;
+            }
+#pragma unroll
+            for (uint i = 0; i < BK; i += STRIDE_B)
+            {
+                reinterpret_cast<float4 *>(&Bs[(inner_row_B + i) * BN + inner_col_B * 4])[0] =
+                    reinterpret_cast<float4 *>(&B[(inner_row_B + i) * N + inner_col_B * 4])[0];
+            }
             __syncthreads();
 
             for (uint bk_idx = 0; bk_idx < BK; bk_idx++)
             {
-                // smme, reg에서도 coalesce가 있을까? 여기선 세로축 방향으로 하고 있는데...
-                for (uint i = 0; i < TM; i++)
-                    regM[i] = As[bk_idx * BM + thread_row * TM + i];
-                for (uint i = 0; i < TN; i++)
-                    regN[i] = Bs[bk_idx * BN + thread_col * TN + i];
+                // for (uint i = 0; i < TM; i++)
+                //     regM[i] = As[bk_idx * BM + thread_row * TM + i];
+                // for (uint i = 0; i < TN; i++)
+                //     regN[i] = Bs[bk_idx * BN + thread_col * TN + i];
+                for (uint i = 0; i < TM; i += 4)
+                    reinterpret_cast<float4 *>(&regM[i])[0] =
+                        reinterpret_cast<float4 *>(&As[bk_idx * BM + thread_row * TM + i])[0];
+                for (uint i = 0; i < TN; i += 4)
+                    reinterpret_cast<float4 *>(&regN[i])[0] =
+                        reinterpret_cast<float4 *>(&Bs[bk_idx * BN + thread_col * TN + i])[0];
+
                 for (uint res_idx_m = 0; res_idx_m < TM; res_idx_m++)
                     for (uint res_idx_n = 0; res_idx_n < TN; res_idx_n++)
                         thread_results[res_idx_m * TN + res_idx_n] += regM[res_idx_m] * regN[res_idx_n];
@@ -194,7 +207,7 @@ namespace mine
 
         for (uint k_idx = 0; k_idx < K; k_idx += BK)
         {
-            float4 tmp = reinterpret_cast<float4 *>(&A[inner_row_A * K + inner_col_A])[0];
+            const float4 tmp = reinterpret_cast<const float4 *>(&A[inner_row_A * K + inner_col_A])[0];
             As[(inner_col_A + 0) * BM + inner_row_A] = tmp.x;
             As[(inner_col_A + 1) * BM + inner_row_A] = tmp.y;
             As[(inner_col_A + 2) * BM + inner_row_A] = tmp.z;
@@ -206,14 +219,16 @@ namespace mine
 
             for (uint bk_idx = 0; bk_idx < BK; bk_idx++)
             {
-                for (uint i = 0; i < TM; i += 4)
-                    reinterpret_cast<float4 *>(&regM[i])[0] =
-                        reinterpret_cast<float4 *>(&As[bk_idx * BM + thread_row * TM + i])[0];
-                // regM[i] = As[bk_idx * BM + thread_row * TM + i];
-                for (uint i = 0; i < TN; i += 4)
-                    reinterpret_cast<float4 *>(&regN[i])[0] =
-                        reinterpret_cast<float4 *>(&Bs[bk_idx * BN + thread_col * TN + i])[0];
-                // regN[i] = Bs[bk_idx * BN + thread_col * TN + i];
+                for (uint i = 0; i < TM; i++)
+                    regM[i] = As[bk_idx * BM + thread_row * TM + i];
+                for (uint i = 0; i < TN; i++)
+                    regN[i] = Bs[bk_idx * BN + thread_col * TN + i];
+                // for (uint i = 0; i < TM; i += 4)
+                //     reinterpret_cast<float4 *>(&regM[i])[0] =
+                //         reinterpret_cast<float4 *>(&As[bk_idx * BM + thread_row * TM + i])[0];
+                // for (uint i = 0; i < TN; i += 4)
+                //     reinterpret_cast<float4 *>(&regN[i])[0] =
+                //         reinterpret_cast<float4 *>(&Bs[bk_idx * BN + thread_col * TN + i])[0];
                 for (uint res_idx_m = 0; res_idx_m < TM; res_idx_m++)
                     for (uint res_idx_n = 0; res_idx_n < TN; res_idx_n++)
                         thread_results[res_idx_m * TN + res_idx_n] += regM[res_idx_m] * regN[res_idx_n];

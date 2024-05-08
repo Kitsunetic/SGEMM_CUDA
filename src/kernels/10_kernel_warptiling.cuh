@@ -229,7 +229,7 @@ namespace wt
       As[(inner_col_A * 4 + 3) * BM + inner_row_A + offset] = tmp.w;
     }
 
-    for (uint offset = 0; offset + row_stride_B < BK; offset += row_stride_B)
+    for (uint offset = 0; offset + row_stride_B <= BK; offset += row_stride_B)
     {
       reinterpret_cast<float4 *>(&Bs[(inner_row_B + offset) * BN + inner_col_B * 4])[0] =
           reinterpret_cast<const float4 *>(&B[(inner_row_B + offset) * N + inner_col_B * 4])[0];
